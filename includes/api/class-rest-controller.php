@@ -121,6 +121,12 @@ class MCP_REST_Controller extends WP_REST_Controller {
             'callback'            => array( $this, 'handle_chat_apply' ),
             'permission_callback' => array( $this, 'chat_permissions_check' ),
         ) );
+
+        register_rest_route( $this->namespace, '/clone', array(
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => array( $this, 'handle_clone' ),
+            'permission_callback' => array( $this, 'clone_permissions_check' ),
+        ) );
     }
 
     public function create_item_permissions_check( $request ) {
@@ -417,6 +423,14 @@ class MCP_REST_Controller extends WP_REST_Controller {
 
     public function handle_chat_apply( $request ) {
         return MCP_Chat_REST::handle_apply( $request );
+    }
+
+    public function clone_permissions_check( $request ) {
+        return MCP_Site_Cloner::permissions_check( $request );
+    }
+
+    public function handle_clone( $request ) {
+        return MCP_Site_Cloner::handle_rest( $request );
     }
 
     public function prepare_item_for_response( $post, $request ) {

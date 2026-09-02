@@ -4,7 +4,7 @@ Tags: elementor, rest-api, automation, opencode, page-builder, webhook, ai
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,18 @@ Use WordPress Application Passwords. Send `Authorization: Basic base64(username:
 Compute `HMAC-SHA256(body, webhook_secret)` and send it in the `X-MCP-Signature` header. Body must be JSON with at least an `event` field.
 
 == Changelog ==
+
+= 1.6.0 =
+* Add Site_Cloner: clone any public URL into an Elementor page via REST /wp-json/mcp/v1/clone
+* Add Site_Crawler: multi-page discovery (nav + path probing for about/services/contact/blog)
+* Add AI_Translator + DOM_Analyzer: per-page structure + palette + typography extraction, AI prompt
+* Add Template_Builder: compose a complete Elementor site from a brand brief (no URL needed)
+  - 7 design systems: Modern SaaS, Warm Editorial, Bold Studio, Calm Spa, Restaurant Warm, Tourism Vivid, Persian Traditional
+  - 7 role-based section builders: header, hero, features, about, testimonials, cta, footer
+* Add fenced-JSON fallback parser (bracket-aware, returns first valid array)
+* Add AI temperature + max_tokens clamps on OpenCode_Client
+* Switch default model to nvidia/nemotron-3-super-120b-a12b:free (Llama 3.3 70B no longer free on OpenRouter)
+* Tests: 99 → 153, all passing; no PHPUnit dependency
 
 = 1.5.0 =
 * Template Manager with full CRUD and active Kit support

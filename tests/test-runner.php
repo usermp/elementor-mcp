@@ -103,9 +103,25 @@ if ( ! function_exists( 'rest_url' ) ) {
 
 // AI stub: configurable per-test via global.
 if ( ! function_exists( 'wp_remote_post' ) ) {
-    function wp_remote_post( $url, $args ) {
+    function wp_remote_post( $url, $args = array() ) {
         $stub = isset( $GLOBALS['mcp_stub_response'] ) ? $GLOBALS['mcp_stub_response'] : '{"choices":[{"message":{"content":"```json\n[]\n```"}}],"model":"m","usage":{"total_tokens":0}}';
         return array( 'body' => $stub );
+    }
+}
+if ( ! function_exists( 'wp_remote_get' ) ) {
+    function wp_remote_get( $url, $args = array() ) {
+        $stub = isset( $GLOBALS['mcp_stub_response'] ) ? $GLOBALS['mcp_stub_response'] : '{"choices":[{"message":{"content":"```json\n[]\n```"}}],"model":"m","usage":{"total_tokens":0}}';
+        return array( 'body' => $stub );
+    }
+}
+if ( ! function_exists( 'wp_remote_head' ) ) {
+    function wp_remote_head( $url, $args = array() ) {
+        return array( 'response' => array( 'code' => 404 ) );
+    }
+}
+if ( ! function_exists( 'wp_parse_url' ) ) {
+    function wp_parse_url( $url, $component = -1 ) {
+        return parse_url( $url, $component );
     }
 }
 if ( ! function_exists( 'wp_remote_retrieve_response_code' ) ) {

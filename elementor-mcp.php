@@ -3,7 +3,7 @@
  * Plugin Name: Elementor MCP
  * Plugin URI: https://github.com/usermp/elementor-mcp
  * Description: Machine Content Producer - bridge between OpenCode external service and WordPress/Elementor for automated page creation via REST API.
- * Version: 1.5.0
+ * Version:           1.6.0
  * Requires at least: 6.5
  * Requires PHP: 7.4
  * Author: Mohammad Yeganeh
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'MCP_VERSION', '1.5.0' );
+define( 'MCP_VERSION', '1.6.0' );
 define( 'MCP_FILE', __FILE__ );
 define( 'MCP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MCP_URL', plugin_dir_url( __FILE__ ) );

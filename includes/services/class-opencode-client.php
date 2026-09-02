@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class MCP_OpenCode_Client {
 
     const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
-    const DEFAULT_MODEL    = 'meta-llama/llama-3.3-70b-instruct:free';
+    const DEFAULT_MODEL    = 'nvidia/nemotron-3-super-120b-a12b:free';
 
     /**
      * Elementor system prompt — anchors the model so it only emits
