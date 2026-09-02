@@ -1,0 +1,37 @@
+{
+    "name": "usermp/elementor-mcp",
+    "description": "WordPress plugin that bridges AI assistants with Elementor page creation via REST API, webhooks, and an in-admin chat panel.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "keywords": ["wordpress", "elementor", "ai", "rest-api", "automation", "page-builder", "openrouter"],
+    "homepage": "https://github.com/usermp/elementor-mcp",
+    "authors": [
+        {
+            "name": "Mohammad Yeganeh",
+            "homepage": "https://github.com/usermp"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "ElementorMCP\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "php tests/test-runner.php",
+        "lint": "find . -name '*.php' -not -path './vendor/*' -exec php -l {} \\;"
+    },
+    "support": {
+        "issues": "https://github.com/usermp/elementor-mcp/issues",
+        "source": "https://github.com/usermp/elementor-mcp"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}

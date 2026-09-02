@@ -27,6 +27,7 @@ class MCP_Plugin {
 
         if ( is_admin() ) {
             MCP_Settings::instance()->register();
+            MCP_Chat_Page::register();
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
         }
 
@@ -91,6 +92,9 @@ class MCP_Plugin {
             'rate_limit'     => 60,
             'enable_logging' => 1,
             'enable_graphql' => 0,
+            'ai_base_url'    => MCP_OpenCode_Client::DEFAULT_BASE_URL,
+            'ai_model'       => MCP_OpenCode_Client::DEFAULT_MODEL,
+            'ai_api_key'     => '',
         );
         $saved = get_option( 'mcp_settings', array() );
         return wp_parse_args( $saved, $defaults );

@@ -21,13 +21,18 @@ class MCP_Autoloader {
         'Webhook_Handler'   => 'api/class-webhook-handler.php',
         'Auth'              => 'api/class-auth.php',
         'Rate_Limiter'      => 'api/class-rate-limiter.php',
+        'Chat_REST'         => 'api/class-chat-rest.php',
         'Page_Builder'      => 'services/class-page-builder.php',
         'Template_Manager'  => 'services/class-template-manager.php',
+        'OpenCode_Client'   => 'services/class-opencode-client.php',
+        'Importer'          => 'services/class-importer.php',
+        'Diff_Engine'       => 'services/class-diff-engine.php',
         'Queue'             => 'jobs/class-queue.php',
         'Widget_Base'       => 'elementor/class-widget-base.php',
         'Control_Register'  => 'elementor/class-control-register.php',
         'Editor_Hooks'      => 'elementor/class-editor-hooks.php',
         'Settings'          => 'admin/class-settings.php',
+        'Chat_Page'         => 'admin/class-chat-page.php',
         'Validator'         => 'utils/class-validator.php',
         'Logger'            => 'utils/class-logger.php',
         'Activator'         => 'class-activator.php',
@@ -41,9 +46,6 @@ class MCP_Autoloader {
      * require_once warnings during page loads.
      */
     private static $pending_classes = array(
-        'MCP_Importer'        => 'services/class-importer.php',
-        'MCP_Diff_Engine'     => 'services/class-diff-engine.php',
-        'MCP_OpenCode_Client' => 'services/class-opencode-client.php',
         'MCP_History_Page'    => 'admin/class-history-page.php',
         'MCP_GDPR'            => 'privacy/class-gdpr.php',
     );

@@ -1,0 +1,223 @@
+/* Elementor MCP — Chat UI */
+
+.mcp-chat-wrap {
+    max-width: 1400px;
+}
+
+.mcp-chat-title {
+    font-weight: 600;
+}
+
+.mcp-chat-shell {
+    display: grid;
+    grid-template-columns: 220px 1fr 360px;
+    gap: 16px;
+    margin-top: 16px;
+    min-height: 540px;
+}
+
+.mcp-chat-side,
+.mcp-chat-main,
+.mcp-chat-result {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+}
+
+.mcp-chat-side .mcp-chat-label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.mcp-chat-select {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.mcp-chat-clear {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.mcp-chat-tips {
+    font-size: 12px;
+    color: #50575e;
+}
+.mcp-chat-tips summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+.mcp-chat-tips ul {
+    margin: 8px 0 0 16px;
+    padding: 0;
+}
+.mcp-chat-tips li {
+    margin-bottom: 4px;
+}
+
+/* Main column */
+
+.mcp-chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 360px;
+    max-height: 540px;
+}
+
+.mcp-chat-msg {
+    max-width: 90%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    line-height: 1.5;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.mcp-chat-msg--user {
+    align-self: flex-end;
+    background: #2271b1;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.mcp-chat-msg--assistant {
+    align-self: flex-start;
+    background: #f0f0f1;
+    color: #1e1e1e;
+    border-bottom-left-radius: 4px;
+}
+
+.mcp-chat-msg--system {
+    align-self: center;
+    background: #fff8e1;
+    color: #6a4f00;
+    font-size: 12px;
+    border: 1px solid #f0e4a8;
+}
+
+.mcp-chat-msg--error {
+    align-self: stretch;
+    background: #fcf0f1;
+    color: #8b1a1a;
+    border: 1px solid #f5c2c7;
+}
+
+.mcp-chat-form {
+    border-top: 1px solid #f0f0f1;
+    padding-top: 12px;
+}
+
+.mcp-chat-input {
+    width: 100%;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 64px;
+}
+
+.mcp-chat-input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.mcp-chat-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.mcp-chat-status {
+    color: #50575e;
+    font-size: 12px;
+}
+
+.mcp-chat-status--error {
+    color: #b32d2e;
+}
+
+/* Result panel */
+
+.mcp-chat-result header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+.mcp-chat-result h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mcp-chat-stat {
+    font-size: 11px;
+    color: #50575e;
+}
+
+.mcp-chat-json {
+    flex: 1;
+    overflow: auto;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre;
+    min-height: 220px;
+    max-height: 360px;
+    margin-bottom: 8px;
+}
+
+.mcp-chat-diff {
+    max-height: 140px;
+    overflow: auto;
+    font-size: 11px;
+    border-top: 1px dashed #dcdcde;
+    padding-top: 8px;
+    margin-bottom: 8px;
+    color: #1e1e1e;
+}
+
+.mcp-chat-diff-op {
+    padding: 2px 6px;
+    margin-bottom: 2px;
+    border-radius: 3px;
+}
+.mcp-chat-diff-op--added    { background: #e6f6ec; color: #0a5226; }
+.mcp-chat-diff-op--removed  { background: #fcf0f1; color: #8b1a1a; }
+.mcp-chat-diff-op--modified { background: #fff8e1; color: #6a4f00; }
+.mcp-chat-diff-op--moved    { background: #e5f1fb; color: #0a4b88; }
+
+.mcp-chat-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mcp-chat-actions .button {
+    flex: 1;
+    text-align: center;
+}
+
+@media (max-width: 1100px) {
+    .mcp-chat-shell {
+        grid-template-columns: 1fr;
+    }
+}

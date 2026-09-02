@@ -16,6 +16,10 @@ A REST API + webhook plugin that lets external AI services (OpenCode, custom LLM
 - 🎨 **Templates CRUD + Kit management** — work with `elementor_library` posts and the active site Kit
 - 🚀 **Bulk creation** — batch endpoint (up to 50 pages per request) with per-item error reporting
 - 🔗 **Webhook receiver** — HMAC-SHA256 signed payloads, dispatches `page.create` / `page.update` / `page.delete` / `template.create` / `ping`
+- 🤖 **AI chat panel** — in-admin conversation UI that talks to OpenRouter (or any OpenAI-compatible endpoint) and generates Elementor JSON on demand
+- 🧠 **AI client** — `MCP_OpenCode_Client` with a hardened system prompt, fenced-JSON extraction, fallback parsing, and temperature/token clamping
+- 📥 **JSON importer** — accepts bare sections arrays, Elementor export envelopes, or single-element objects; drops blocked types, regenerates IDs, sanitizes settings, enforces depth/element caps
+- 🔍 **Diff engine** — preview added/removed/modified/moved operations before applying AI output to an existing page
 - 🔐 **WordPress Application Password auth** — standard WP capability checks (`edit_pages`, `manage_options`)
 - ⚡ **Action Scheduler integration** — background jobs with automatic WP-Cron fallback
 - 🛡️ **Rate limiting** — per-user and per-IP buckets via transients
@@ -23,6 +27,7 @@ A REST API + webhook plugin that lets external AI services (OpenCode, custom LLM
 - 🪝 **Editor hooks** — listen to `elementor/save_post`, `elementor/editor/after_save`
 - 🔁 **Idempotency** — `X-Idempotency-Key` header or `idempotency_key` body field
 - 📊 **In-option logger** — last 200 events, viewable in admin
+- 🧪 **Self-contained test runner** — 99 tests, no PHPUnit required
 - 🗑️ **Clean uninstall** — strips every `mcp_*` option and meta on plugin deletion
 
 ## 📦 Requirements
@@ -50,19 +55,21 @@ All endpoints live under the `/wp-json/mcp/v1/` namespace. Authentication is **H
 | Method | Endpoint                     | Description                          |
 | ------ | ---------------------------- | ------------------------------------ |
 | `POST`   | `/pages`                     | Create a page (title + Elementor data) |
-| `GET`    | `/pages`                     | List pages (paginated)               |
+| `GET`    | `/pages`                     | List pages (paginated) |
 | `GET`    | `/pages/{id}`                | Get a single page with `_elementor_data` |
 | `PUT`    | `/pages/{id}`                | Update title/content/Elementor JSON |
-| `DELETE` | `/pages/{id}`                | Delete a page                        |
+| `DELETE` | `/pages/{id}`                | Delete a page |
 | `POST`   | `/pages/batch`               | Create up to 50 pages in one request |
-| `POST`   | `/templates`                 | Create an Elementor template         |
-| `GET`    | `/templates`                 | List templates                       |
-| `GET`    | `/templates/{id}`            | Get a template                       |
-| `PUT`    | `/templates/{id}`            | Update a template                    |
-| `DELETE` | `/templates/{id}`            | Delete a template                    |
-| `GET`    | `/kit`                       | Get the active Elementor Kit         |
-| `PUT`    | `/kit`                       | Set the active Kit by post ID        |
-| `POST`   | `/webhook`                   | Receive HMAC-signed events           |
+| `POST`   | `/templates`                 | Create an Elementor template |
+| `GET`    | `/templates`                 | List templates |
+| `GET`    | `/templates/{id}`            | Get a template |
+| `PUT`    | `/templates/{id}`            | Update a template |
+| `DELETE` | `/templates/{id}`            | Delete a template |
+| `GET`    | `/kit`                       | Get the active Elementor Kit |
+| `PUT`    | `/kit`                       | Set the active Kit by post ID |
+| `POST`   | `/webhook`                   | Receive HMAC-signed events |
+| `POST`   | `/chat`                      | Generate Elementor JSON from a prompt (used by the in-admin chat panel) |
+| `POST`   | `/chat/apply`                | Apply an AI-generated (or imported) Elementor payload to a page |
 
 ### Example: create a page with Elementor data
 
@@ -109,18 +116,20 @@ includes/
 ├── class-activator.php        ← Default options on activation
 ├── class-deactivator.php
 ├── admin/
-│   └── class-settings.php     ← MCP → Settings admin page
+│   ├── class-settings.php     ← MCP → Settings admin page
+│   └── class-chat-page.php    ← MCP → Chat admin page (AI chat UI)
 ├── api/
 │   ├── class-rest-controller.php  ← /wp-json/mcp/v1/* routes
 │   ├── class-webhook-handler.php  ← HMAC + dispatch
 │   ├── class-auth.php             ← Signature & nonce helpers, idempotency
-│   └── class-rate-limiter.php     ← Per-user / per-IP buckets
+│   ├── class-rate-limiter.php     ← Per-user / per-IP buckets
+│   └── class-chat-rest.php        ← /chat and /chat/apply handlers
 ├── services/
 │   ├── class-page-builder.php     ← wp_insert_post + Elementor meta writer
 │   ├── class-template-manager.php ← Templates + Kit
-│   ├── class-importer.php         ← (planned) Elementor JSON importer
-│   ├── class-diff-engine.php      ← (planned) Before/after diff for safe updates
-│   └── class-opencode-client.php  ← (planned) AI chat client
+│   ├── class-importer.php         ← Elementor JSON importer (envelope/bare/single)
+│   ├── class-diff-engine.php     ← Elementor tree diff (add/remove/modify/move)
+│   └── class-opencode-client.php  ← AI client (OpenAI-compatible chat completions)
 ├── elementor/
 │   ├── class-widget-base.php      ← Abstract widget base
 │   ├── class-control-register.php ← Widget & control registration
@@ -139,11 +148,14 @@ includes/
 - [x] Action Scheduler + WP-Cron fallback
 - [x] Rate limiting
 - [x] Custom Elementor widget
-- [ ] `MCP_OpenCode_Client` — chat with AI to generate Elementor JSON
-- [ ] `MCP_Importer` — accept Elementor `.json` exports and import them
-- [ ] `MCP_Diff_Engine` — preview changes before applying them to existing pages
-- [ ] In-admin chat panel for conversational page design
-- [ ] PHPUnit test coverage for services
+- [x] AI client (`MCP_OpenCode_Client`) with system prompt + clamps
+- [x] Elementor JSON importer with sanitization + blocked-widget list
+- [x] Diff engine for previewing AI changes
+- [x] In-admin chat panel + REST endpoints for AI generation and apply
+- [x] Test runner with 99 tests across OpenCode/Importer/Diff/Chat flow
+- [ ] `MCP_History_Page` — chat session history viewer
+- [ ] `MCP_GDPR` — personal data exporter/eraser hooks
+- [ ] PHPUnit test coverage that runs inside a real WP install
 
 ## 📝 Changelog
 

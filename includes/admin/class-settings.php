@@ -79,6 +79,22 @@ class MCP_Settings {
             $output['rate_limit'] = max( 0, min( 10000, $limit ) );
         }
 
+        if ( isset( $input['ai_base_url'] ) ) {
+            $url = trim( (string) $input['ai_base_url'] );
+            if ( '' === $url || filter_var( $url, FILTER_VALIDATE_URL ) ) {
+                $output['ai_base_url'] = esc_url_raw( $url );
+            }
+        }
+
+        if ( isset( $input['ai_model'] ) ) {
+            $output['ai_model'] = sanitize_text_field( $input['ai_model'] );
+        }
+
+        // API key is treated as a secret — only overwrite if a non-empty value was submitted.
+        if ( isset( $input['ai_api_key'] ) && '' !== trim( (string) $input['ai_api_key'] ) ) {
+            $output['ai_api_key'] = sanitize_text_field( $input['ai_api_key'] );
+        }
+
         return $output;
     }
 
