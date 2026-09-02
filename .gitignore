@@ -1,0 +1,12 @@
+/vendor/
+/node_modules/
+*.log
+.DS_Store
+.idea/
+.vscode/
+.phpunit.result.cache
+.phpunit.cache/
+tests/phpunit/wordpress/
+tests/phpunit/wp-tests-config.php
+*.zip
+*.tar.gz
