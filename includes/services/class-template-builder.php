@@ -104,8 +104,8 @@ class MCP_Template_Builder {
             }
             echo "  [OK $key]\n";
             $built[] = $resp;
-            // Brief delay to avoid OpenRouter rate limits.
-            sleep( 1 );
+            // Longer delay to avoid OpenRouter rate limits on free models.
+            sleep( 3 );
         }
 
         if ( empty( $built ) ) {
@@ -236,6 +236,7 @@ HEADER. Build a single sticky-style header section. One column with a horizontal
 - Navigation widget in the middle with 4 placeholder items: "About", "Services", "Work", "Contact" (anchor text only, no real links)
 - Button widget on the right with text "Get started" and a contrasting background color
 Background: white or very light from the palette. Bottom border or subtle shadow.
+DO NOT use shape dividers.
 TEXT,
             'hero' => <<<'TEXT'
 HERO. Single column, full width, dark background (use the darkest palette color).
@@ -243,6 +244,7 @@ HERO. Single column, full width, dark background (use the darkest palette color)
 - Text-editor widget: 1-2 sentence subheading in a lighter accent color
 - Two button widgets side by side: primary CTA "Get started" (accent color) and secondary "Learn more" (outlined / ghost style)
 - Generous padding (120px top/bottom)
+DO NOT use shape dividers or any "shape_divider" or "shape" settings.
 TEXT,
             'features' => <<<'TEXT'
 FEATURES. Light background. One column with:

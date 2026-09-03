@@ -156,6 +156,16 @@ class MCP_Block_Repair {
             $fixed++;
             return $section;
         }
+        // Strip shape divider settings — they require Elementor Pro and
+        // crash the free build when malformed.
+        if ( isset( $section['settings'] ) && is_array( $section['settings'] ) ) {
+            foreach ( array( 'shape_divider_top', 'shape_divider_bottom' ) as $k ) {
+                if ( isset( $section['settings'][ $k ] ) ) {
+                    unset( $section['settings'][ $k ] );
+                    $fixed++;
+                }
+            }
+        }
         foreach ( $section['elements'] as $col_idx => $column ) {
             if ( ! is_array( $column ) || ( $column['elType'] ?? '' ) !== 'column' ) {
                 unset( $section['elements'][ $col_idx ] );
