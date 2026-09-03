@@ -107,6 +107,14 @@ PROMPT;
 
         $data = MCP_OpenCode_Client::extract_elementor_json( $resp['content'] );
         if ( is_wp_error( $data ) ) {
+            $data = MCP_Output_Repair::repair_json( $resp['content'] );
+            if ( ! is_array( $data ) ) {
+                return new WP_Error( 'mcp_bad_json', __( 'AI returned unparseable JSON.', 'elementor-mcp' ), array( 'status' => 502 ) );
+            }
+        }
+
+        $data = MCP_Output_Repair::repair_elementor( $data );
+        if ( is_wp_error( $data ) ) {
             return $data;
         }
 

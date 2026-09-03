@@ -221,3 +221,157 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Toolbar buttons + modals + side panels (added in v1.6.0) */
+
+.mcp-chat-toolbar-extra {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.mcp-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.mcp-modal-card {
+    background: #fff;
+    border-radius: 8px;
+    max-width: 640px;
+    width: 92vw;
+    max-height: 88vh;
+    overflow: auto;
+    padding: 20px 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.mcp-modal-card h2 {
+    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    padding: 0 4px;
+}
+
+.mcp-modal-card label {
+    display: block;
+    margin: 12px 0 4px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.mcp-modal-card input[type="text"],
+.mcp-modal-card input[type="url"],
+.mcp-modal-card input[type="number"],
+.mcp-modal-card select,
+.mcp-modal-card textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.mcp-modal-card textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.mcp-modal-status {
+    margin-top: 10px;
+    color: #50575e;
+    font-size: 13px;
+}
+
+.mcp-modal-result {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f6f7f7;
+    border-radius: 4px;
+    font-size: 13px;
+    max-height: 240px;
+    overflow: auto;
+}
+
+.mcp-side-panel {
+    position: fixed;
+    top: 32px;
+    right: 0;
+    bottom: 0;
+    width: 380px;
+    background: #fff;
+    border-left: 1px solid #dcdcde;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.1);
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+}
+
+.mcp-side-panel header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #dcdcde;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-side-panel header h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.mcp-side-panel .mcp-side-panel-body {
+    padding: 16px 20px;
+    overflow: auto;
+    flex: 1;
+}
+
+.mcp-side-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mcp-side-panel li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.mcp-prompt-card {
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.mcp-prompt-card h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+}
+
+.mcp-prompt-card p {
+    margin: 0 0 8px;
+    color: #50575e;
+    font-size: 12px;
+}

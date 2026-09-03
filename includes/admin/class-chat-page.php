@@ -155,6 +155,20 @@ class MCP_Chat_Page {
                                 <?php esc_html_e( 'Send', 'elementor-mcp' ); ?>
                             </button>
                         </div>
+                        <div class="mcp-chat-toolbar-extra">
+                            <button type="button" class="button" id="mcp-chat-clone-site">
+                                🌐 <?php esc_html_e( 'Clone a site', 'elementor-mcp' ); ?>
+                            </button>
+                            <button type="button" class="button" id="mcp-chat-template">
+                                ✨ <?php esc_html_e( 'Template Builder', 'elementor-mcp' ); ?>
+                            </button>
+                            <button type="button" class="button" id="mcp-chat-prompts">
+                                📚 <?php esc_html_e( 'Prompts', 'elementor-mcp' ); ?>
+                            </button>
+                            <button type="button" class="button" id="mcp-chat-history">
+                                🕐 <?php esc_html_e( 'History', 'elementor-mcp' ); ?>
+                            </button>
+                        </div>
                     </form>
                 </main>
 
@@ -172,6 +186,99 @@ class MCP_Chat_Page {
                 </aside>
             </div>
         </div>
+
+        <?php // Clone site modal ?>
+        <div id="mcp-clone-modal" class="mcp-modal" role="dialog" aria-modal="true">
+            <div class="mcp-modal-card">
+                <h2>🌐 <?php esc_html_e( 'Clone a public site', 'elementor-mcp' ); ?>
+                    <button type="button" class="mcp-modal-close" aria-label="Close">&times;</button>
+                </h2>
+                <p><?php esc_html_e( "Enter a URL. We'll crawl it, fetch each page, and generate Elementor pages in your drafts.", 'elementor-mcp' ); ?></p>
+                <label for="mcp-clone-url"><?php esc_html_e( 'Site URL', 'elementor-mcp' ); ?></label>
+                <input type="url" id="mcp-clone-url" placeholder="https://example.com" />
+                <label for="mcp-clone-pages"><?php esc_html_e( 'Max pages to clone (1-6)', 'elementor-mcp' ); ?></label>
+                <input type="number" id="mcp-clone-pages" min="1" max="6" value="4" />
+                <p>
+                    <button type="button" class="button button-primary" id="mcp-clone-run">
+                        <?php esc_html_e( 'Start cloning', 'elementor-mcp' ); ?>
+                    </button>
+                </p>
+                <div id="mcp-clone-status" class="mcp-modal-status"></div>
+                <div id="mcp-clone-result" class="mcp-modal-result"></div>
+            </div>
+        </div>
+
+        <?php // Template builder modal ?>
+        <div id="mcp-template-modal" class="mcp-modal" role="dialog" aria-modal="true">
+            <div class="mcp-modal-card">
+                <h2>✨ <?php esc_html_e( 'Template Builder', 'elementor-mcp' ); ?>
+                    <button type="button" class="mcp-modal-close" aria-label="Close">&times;</button>
+                </h2>
+                <p><?php esc_html_e( 'Generate a complete Elementor site from a brand brief. No URL needed.', 'elementor-mcp' ); ?></p>
+                <form>
+                    <label for="mcp-tpl-industry"><?php esc_html_e( 'Industry', 'elementor-mcp' ); ?></label>
+                    <input type="text" name="industry" id="mcp-tpl-industry" placeholder="e.g. SaaS, restaurant, tourism" />
+
+                    <label for="mcp-tpl-brand"><?php esc_html_e( 'Brand name', 'elementor-mcp' ); ?></label>
+                    <input type="text" name="brand_name" id="mcp-tpl-brand" placeholder="Acme Studio" />
+
+                    <label for="mcp-tpl-tagline"><?php esc_html_e( 'Tagline', 'elementor-mcp' ); ?></label>
+                    <input type="text" name="tagline" id="mcp-tpl-tagline" placeholder="One-line value proposition" />
+
+                    <label for="mcp-tpl-desc"><?php esc_html_e( 'Description (1-2 sentences)', 'elementor-mcp' ); ?></label>
+                    <textarea name="description" id="mcp-tpl-desc" placeholder="What you do, who for, why different."></textarea>
+
+                    <label for="mcp-tpl-lang"><?php esc_html_e( 'Language', 'elementor-mcp' ); ?></label>
+                    <select name="language" id="mcp-tpl-lang">
+                        <option value="en">English</option>
+                        <option value="fa">Farsi (فارسی)</option>
+                    </select>
+
+                    <label for="mcp-tpl-design"><?php esc_html_e( 'Design system', 'elementor-mcp' ); ?></label>
+                    <select name="design_system" id="mcp-tpl-design">
+                        <option value="modern_saas">Modern SaaS</option>
+                        <option value="warm_editorial">Warm Editorial</option>
+                        <option value="bold_studio">Bold Studio</option>
+                        <option value="calm_spa">Calm Spa</option>
+                        <option value="restaurant_warm">Restaurant Warm</option>
+                        <option value="tourism_vivid">Tourism Vivid</option>
+                        <option value="persian_traditional">Persian Traditional</option>
+                    </select>
+
+                    <p>
+                        <button type="button" class="button button-primary" id="mcp-template-run">
+                            <?php esc_html_e( 'Build site', 'elementor-mcp' ); ?>
+                        </button>
+                    </p>
+                    <div id="mcp-template-status" class="mcp-modal-status"></div>
+                    <div id="mcp-template-result" class="mcp-modal-result"></div>
+                </form>
+            </div>
+        </div>
+
+        <?php // History side panel ?>
+        <aside id="mcp-history-panel" class="mcp-side-panel" aria-label="Snapshots">
+            <header>
+                <h2>🕐 <?php esc_html_e( 'Snapshots', 'elementor-mcp' ); ?></h2>
+                <button type="button" class="mcp-modal-close" aria-label="Close">&times;</button>
+            </header>
+            <div class="mcp-side-panel-body">
+                <p><?php esc_html_e( 'Snapshots of the currently selected target page.', 'elementor-mcp' ); ?></p>
+                <ul id="mcp-history-list"></ul>
+            </div>
+        </aside>
+
+        <?php // Prompts side panel ?>
+        <aside id="mcp-prompts-panel" class="mcp-side-panel" aria-label="Prompt library">
+            <header>
+                <h2>📚 <?php esc_html_e( 'Prompt library', 'elementor-mcp' ); ?></h2>
+                <button type="button" class="mcp-modal-close" aria-label="Close">&times;</button>
+            </header>
+            <div class="mcp-side-panel-body">
+                <p><?php esc_html_e( 'Click a template to load it into Template Builder.', 'elementor-mcp' ); ?></p>
+                <div id="mcp-prompts-grid"></div>
+            </div>
+        </aside>
         <?php
     }
 }

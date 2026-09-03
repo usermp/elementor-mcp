@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} WP ${{ matrix.wp }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.2', '8.5']
+        wp:  ['6.5', '6.8', '7.1']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli
+
+      - name: PHP syntax check
+        run: |
+          find . -name "*.php" -not -path "./vendor/*" -not -path "./.git/*" -exec php -l {} \;
+
+      - name: Run unit tests
+        run: |
+          php tests/test-runner.php
+
+  wpcli:
+    name: WP-CLI smoke (PHP 8.2)
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MARIADB_DATABASE: wordpress_test
+          MARIADB_ROOT_PASSWORD: root
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=5s
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mysqli
+      - name: Setup WP test environment
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y subversion
+          svn co --quiet https://develop.svn.wordpress.org/tags/6.8 /tmp/wordpress
+          bash /tmp/wordpress-tests/phpunit/includes/install.sh \
+            /tmp/wordpress \
+            wordpress_test \
+            root root \
+            127.0.0.1:3306 \
+            6.8
+      - name: Install plugin
+        run: |
+          mkdir -p /tmp/wordpress/src/wp-content/plugins
+          cp -r . /tmp/wordpress/src/wp-content/plugins/elementor-mcp
+      - name: Smoke status
+        run: |
+          wp --path=/tmp/wordpress/src --allow-root mcp status
+      - name: Smoke tools
+        run: |
+          wp --path=/tmp/wordpress/src --allow-root mcp tools | head -5

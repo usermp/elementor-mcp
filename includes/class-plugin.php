@@ -31,7 +31,14 @@ class MCP_Plugin {
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
         }
 
+        // CLI is registered in boot() below.
+
         add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+
+        if ( ! class_exists( 'MCP_CLI', false ) ) {
+            require_once MCP_PATH . 'includes/cli/class-mcp-cli.php';
+        }
+        MCP_CLI::register();
 
         if ( self::elementor_active() ) {
             MCP_Editor_Hooks::register();
@@ -39,6 +46,8 @@ class MCP_Plugin {
         } else {
             add_action( 'plugins_loaded', array( $this, 'register_elementor_components' ), 20 );
         }
+        // Snapshot post type is always available.
+        ( new MCP_Snapshot() )->register_hooks();
 
         do_action( 'mcp_loaded', $this );
     }
