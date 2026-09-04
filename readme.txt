@@ -4,7 +4,7 @@ Tags: elementor, rest-api, automation, opencode, page-builder, webhook, ai
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,29 @@ Use WordPress Application Passwords. Send `Authorization: Basic base64(username:
 Compute `HMAC-SHA256(body, webhook_secret)` and send it in the `X-MCP-Signature` header. Body must be JSON with at least an `event` field.
 
 == Changelog ==
+
+= 1.8.0 =
+* Add Theme Builder (MCP_Themer): custom post type for header / footer / single / archive / 404 with conditional rendering, priority-based fallback chain, and full Elementor widget support
+* Add Themer blank-template.php: no-chrome fallback when no matching template part
+* Add full Performance_Analyzer rewrite: 12 checks (cron overdue, object cache, autoload size, revisions, transients, plugins, themes, PHP version, WP version, memory_limit, uploads writable, cron overdue) with 12h transient cache, option persistence, A/B/C/D/F grading
+* Add full Security_Scanner rewrite: 12 checks (WP_DEBUG, file_editor, admin user, DB prefix, WP version, PHP version, salts, readme.html, xmlrpc, wp-config.php perms, DB table prefix, login rate-limiting)
+* Add MCP_Audit_Page: side-by-side perf + sec cards with severity badges, copy-able fix snippets, one-click Refresh with nonce verification
+* Add WP-CLI commands: `wp mcp audit [--refresh]` and `wp mcp security [--refresh]`
+* Add REST endpoints: GET /mcp/v1/audit/performance and GET /mcp/v1/audit/security (manage_options)
+* Add Agent Registry tools: performance_audit, security_audit
+* Bugfix: autoloader map 'Performance' → 'Performance_Analyzer'
+* Bugfix: format_items fallback to line-by-line log on associative tables
+* Bugfix: chat.js guard null response.error, use `path:` instead of `url:`
+* Bugfix: settings.php bootstrap_submenu_pages() registers audit page
+* Bugfix: plugin.php register Themer in admin bootstrap
+* Template_Builder: more detailed style guidance in prompts
+
+= 1.7.0 =
+* Add Template_Builder, Site_Crawler, Agent_Registry, Api_Key, Idempotency, Media_Uploader, Block_Repair, Output_Repair, Error_Tracker, Audit_Page
+* Snapshot + Rollback with elementor data integrity
+* Performance + Security analyzers (initial)
+* WP-CLI commands: status, build-template, clone, tools, errors, api-key
+* 20 new features total in this release
 
 = 1.6.0 =
 * Add Site_Cloner: clone any public URL into an Elementor page via REST /wp-json/mcp/v1/clone
