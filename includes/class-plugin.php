@@ -29,6 +29,7 @@ class MCP_Plugin {
             MCP_Settings::instance()->register();
             MCP_Chat_Page::register();
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+            add_action( 'admin_menu', array( 'MCP_Settings', 'bootstrap_submenu_pages' ), 20 );
         }
 
         // CLI is registered in boot() below.
@@ -48,6 +49,9 @@ class MCP_Plugin {
         }
         // Snapshot post type is always available.
         ( new MCP_Snapshot() )->register_hooks();
+
+        // Themer: custom Elementor theme parts (header / footer / single / archive / 404).
+        new MCP_Themer();
 
         do_action( 'mcp_loaded', $this );
     }

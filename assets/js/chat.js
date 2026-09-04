@@ -148,13 +148,13 @@
                 history: conversation.slice(0, -1),
             };
             const response = await wp.apiFetch({
-                url: settings.restUrl,
+                path: '/mcp/v1/chat',
                 method: 'POST',
                 data: body,
             });
 
-            if (!response.ok) {
-                appendMessage('error', settings.i18n.error + ': ' + (response.error || 'unknown'));
+            if (!response || !response.ok) {
+                appendMessage('error', settings.i18n.error + ': ' + ((response && response.error) || 'unknown'));
                 setStatus('', true);
             } else {
                 appendMessage('assistant', 'Generated ' + (response.stats.sections || 0) + ' sections');
@@ -163,7 +163,7 @@
                 setStatus('Done · model=' + response.model);
             }
         } catch (err) {
-            appendMessage('error', settings.i18n.error + ': ' + (err.message || err));
+            appendMessage('error', settings.i18n.error + ': ' + ((err && err.message) || err));
             setStatus('', true);
         } finally {
             sendBtn.disabled = false;
@@ -182,7 +182,7 @@
         setStatus('Applying…');
         try {
             const data = await wp.apiFetch({
-                url: settings.restUrl + '/apply',
+                path: '/mcp/v1/chat/apply',
                 method: 'POST',
                 data: {
                     sections: lastSections,
@@ -191,8 +191,8 @@
                     status: 'draft',
                 },
             });
-            if (!data.ok) {
-                appendMessage('error', 'Apply failed: ' + (data.error || 'unknown'));
+            if (!data || !data.ok) {
+                appendMessage('error', 'Apply failed: ' + ((data && (data.error || data.message)) || 'unknown'));
                 setStatus('', true);
                 return;
             }
@@ -206,7 +206,7 @@
                 pageSelect.appendChild(opt);
             }
         } catch (err) {
-            appendMessage('error', 'Apply error: ' + (err.message || err));
+            appendMessage('error', 'Apply error: ' + ((err && err.message) || err));
             setStatus('', true);
         } finally {
             applyBtn.disabled = false;
@@ -267,26 +267,28 @@
         result.innerHTML = '';
         try {
             const data = await wp.apiFetch({
-                url: settings.restUrl.replace('/chat', '/clone'),
+                path: '/mcp/v1/clone',
                 method: 'POST',
                 data: { url: url, max_pages: pages, status: 'draft' },
             });
-            if (data.code) {
-                status.textContent = 'Error: ' + (data.message || data.code);
+            if (!data || data.code) {
+                status.textContent = 'Error: ' + ((data && (data.message || data.code)) || 'unknown');
                 return;
             }
-            status.textContent = 'Done. ' + (data.pages ? data.pages.length : 0) + ' page(s) created.';
-            const list = (data.pages || []).map(p =>
-                '<li><strong>' + escapeHtml(p.role) + '</strong>: ' +
-                (p.error ? 'FAIL: ' + escapeHtml(p.error) :
-                 'post_id=' + p.post_id + ' · ' + p.stats.sections + ' sections · ' +
-                 '<a href="' + p.view_url + '" target="_blank">view</a> · ' +
-                 '<a href="' + p.edit_url + '" target="_blank">edit</a>') +
-                '</li>'
-            ).join('');
+            const pageResults = data.pages || [];
+            status.textContent = 'Done. ' + pageResults.length + ' page(s) created.';
+            const list = pageResults.map(p => {
+                const errBlock = p.error
+                    ? '<strong style="color:#d63638">FAIL: ' + escapeHtml(p.error) + '</strong>'
+                    : 'post_id=' + (p.post_id || '?') +
+                      ' · ' + ((p.stats && p.stats.sections) || 0) + ' sections · ' +
+                      (p.view_url ? '<a href="' + p.view_url + '" target="_blank">view</a> · ' : '') +
+                      (p.edit_url ? '<a href="' + p.edit_url + '" target="_blank">edit</a>' : '');
+                return '<li><strong>' + escapeHtml(p.role || 'page') + '</strong>: ' + errBlock + '</li>';
+            }).join('');
             result.innerHTML = '<ul style="margin-top:8px">' + list + '</ul>';
         } catch (err) {
-            status.textContent = 'Error: ' + (err.message || JSON.stringify(err));
+            status.textContent = 'Error: ' + ((err && err.message) || JSON.stringify(err));
         }
     }
 
@@ -314,25 +316,25 @@
         status.textContent = 'Building template (one section at a time, may take 1–2 minutes)…';
         result.innerHTML = '';
         try {
-            // Use existing /clone endpoint to leverage clone_url pipeline, but
-            // with a "template://" pseudo-URL would need backend support. For
-            // now, the Template_Builder is a backend service, so we call it
-            // via a dedicated endpoint we'll register.
             const data = await wp.apiFetch({
-                url: settings.restUrl.replace('/chat', '/template'),
+                path: '/mcp/v1/template',
                 method: 'POST',
                 data: { brief: brief, status: 'draft' },
             });
-            if (data.code) {
-                status.textContent = 'Error: ' + (data.message || data.code);
+            if (!data || data.code) {
+                status.textContent = 'Error: ' + ((data && (data.message || data.code)) || 'unknown');
                 return;
             }
-            status.textContent = 'Done. ' + (data.stats.sections || 0) + ' sections, ' + (data.stats.widgets || 0) + ' widgets.';
+            const s = (data.stats || {});
+            status.textContent = 'Done. ' + (s.sections || 0) + ' sections, ' + (s.widgets || 0) + ' widgets.';
+            const viewLink = data.view_url
+                ? '<a href="' + data.view_url + '" target="_blank" class="button">View</a> ' : '';
+            const editLink = data.edit_url
+                ? '<a href="' + data.edit_url + '" target="_blank" class="button">Edit in Elementor</a>' : '';
             result.innerHTML = '<p>Page created: <strong>' + escapeHtml(brief.brand_name) + '</strong></p>' +
-                '<p><a href="' + data.view_url + '" target="_blank" class="button">View</a> ' +
-                '<a href="' + data.edit_url + '" target="_blank" class="button">Edit in Elementor</a></p>';
+                '<p>' + viewLink + editLink + '</p>';
         } catch (err) {
-            status.textContent = 'Error: ' + (err.message || JSON.stringify(err));
+            status.textContent = 'Error: ' + ((err && err.message) || JSON.stringify(err));
         }
     }
 
@@ -349,7 +351,7 @@
         list.innerHTML = 'Loading…';
         try {
             const data = await wp.apiFetch({
-                url: settings.restUrl.replace('/chat', '/agent/snapshot/list') + '&post_id=' + postId,
+                path: '/mcp/v1/agent/snapshot/list?post_id=' + postId,
                 method: 'GET',
             });
             const items = data.items || [];
@@ -374,7 +376,7 @@
         if (!confirm('Restore page from snapshot #' + snapId + '? Current data will be backed up first.')) return;
         try {
             const data = await wp.apiFetch({
-                url: settings.restUrl.replace('/chat', '/agent/snapshot/restore'),
+                path: '/mcp/v1/agent/snapshot/restore',
                 method: 'POST',
                 data: { snapshot_id: snapId },
             });

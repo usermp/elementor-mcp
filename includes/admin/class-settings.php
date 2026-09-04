@@ -31,6 +31,12 @@ class MCP_Settings {
         add_action( 'admin_post_mcp_clear_logs', array( $this, 'handle_clear_logs' ) );
     }
 
+    public static function bootstrap_submenu_pages() {
+        if ( class_exists( 'MCP_Audit_Page' ) ) {
+            MCP_Audit_Page::register();
+        }
+    }
+
     public function add_menu() {
         add_menu_page(
             __( 'MCP', 'elementor-mcp' ),

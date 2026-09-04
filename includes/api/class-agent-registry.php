@@ -127,6 +127,29 @@ class MCP_Agent_Registry {
             ),
             'required'   => array( 'q' ),
         ), array( $this, 'tool_content_search' ) );
+
+        $this->register( 'performance_audit', 'Run a read-only performance audit and return findings with score.', 'manage_options', array(
+            'properties' => array(
+                'force' => array( 'type' => 'boolean', 'default' => false ),
+            ),
+        ), array( $this, 'tool_performance_audit' ) );
+
+        $this->register( 'security_audit', 'Run a read-only security audit and return findings with score.', 'manage_options', array(
+            'properties' => array(
+                'force' => array( 'type' => 'boolean', 'default' => false ),
+            ),
+        ), array( $this, 'tool_security_audit' ) );
+
+        $this->register( 'themer_create', 'Create a theme part (header / footer / single / archive / 404) with Elementor sections.', 'edit_pages', array(
+            'properties' => array(
+                'title'      => array( 'type' => 'string' ),
+                'location'   => array( 'type' => 'string', 'enum' => array( 'header', 'footer', 'single', 'archive', '404' ) ),
+                'sections'   => array( 'type' => 'array' ),
+                'conditions' => array( 'type' => 'object' ),
+                'priority'   => array( 'type' => 'integer', 'default' => 0 ),
+            ),
+            'required'   => array( 'title', 'location', 'sections' ),
+        ), array( $this, 'tool_themer_create' ) );
     }
 
     public function register( $name, $description, $capability, $schema, $handler ) {
@@ -363,5 +386,26 @@ class MCP_Agent_Registry {
             );
         }
         return array( 'items' => $items, 'total' => (int) $query->found_posts );
+    }
+
+    public function tool_performance_audit( $args ) {
+        $a = new MCP_Performance_Analyzer();
+        return ! empty( $args['force'] ) ? $a->analyze() : $a->last_run();
+    }
+
+    public function tool_security_audit( $args ) {
+        $s = new MCP_Security_Scanner();
+        return ! empty( $args['force'] ) ? $s->scan() : $s->last_run();
+    }
+
+    public function tool_themer_create( $args ) {
+        $t = new MCP_Themer();
+        return array( 'id' => $t->create( array(
+            'title'      => (string) $args['title'],
+            'location'   => (string) $args['location'],
+            'sections'   => (array) $args['sections'],
+            'conditions' => isset( $args['conditions'] ) ? (array) $args['conditions'] : array(),
+            'priority'   => (int) ( $args['priority'] ?? 0 ),
+        ) ) );
     }
 }

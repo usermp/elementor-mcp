@@ -134,6 +134,24 @@ class MCP_REST_Controller extends WP_REST_Controller {
             'permission_callback' => array( $this, 'chat_permissions_check' ),
         ) );
 
+        register_rest_route( $this->namespace, '/audit/performance', array(
+            'methods'             => WP_REST_Server::READABLE,
+            'callback'            => array( $this, 'handle_audit_perf' ),
+            'permission_callback' => array( $this, 'admin_permissions_check' ),
+        ) );
+
+        register_rest_route( $this->namespace, '/audit/security', array(
+            'methods'             => WP_REST_Server::READABLE,
+            'callback'            => array( $this, 'handle_audit_sec' ),
+            'permission_callback' => array( $this, 'admin_permissions_check' ),
+        ) );
+
+        register_rest_route( $this->namespace, '/themer/create', array(
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => array( $this, 'handle_themer_create' ),
+            'permission_callback' => array( $this, 'agent_permissions_check' ),
+        ) );
+
         register_rest_route( $this->namespace, '/agent/tools/list', array(
             'methods'             => WP_REST_Server::READABLE,
             'callback'            => array( $this, 'handle_agent_list' ),
@@ -475,10 +493,25 @@ class MCP_REST_Controller extends WP_REST_Controller {
     }
 
     public function handle_clone( $request ) {
-        return MCP_Site_Cloner::handle_rest( $request );
+        $key = MCP_Idempotency::key_from_request( $request );
+        if ( $key ) {
+            $cached = MCP_Idempotency::recall( $key );
+            if ( $cached ) return rest_ensure_response( $cached );
+        }
+        $resp = MCP_Site_Cloner::handle_rest( $request );
+        if ( ! is_wp_error( $resp ) && $key ) {
+            MCP_Idempotency::remember( $key, $resp instanceof WP_REST_Response ? $resp->get_data() : $resp );
+        }
+        return $resp;
     }
 
     public function handle_template_build( $request ) {
+        $key = MCP_Idempotency::key_from_request( $request );
+        if ( $key ) {
+            $cached = MCP_Idempotency::recall( $key );
+            if ( $cached ) return rest_ensure_response( $cached );
+        }
+
         $brief = (array) $request->get_param( 'brief' );
         if ( empty( $brief['brand_name'] ) ) {
             return new WP_Error( 'mcp_template_no_brand', __( 'brand_name is required.', 'elementor-mcp' ), array( 'status' => 400 ) );
@@ -494,7 +527,12 @@ class MCP_REST_Controller extends WP_REST_Controller {
         if ( is_wp_error( $page ) ) {
             return $page;
         }
-        return rest_ensure_response( array_merge( $page, array( 'stats' => $built['stats'] ) ) );
+        $payload = array_merge( $page, array( 'stats' => $built['stats'] ) );
+
+        if ( $key ) {
+            MCP_Idempotency::remember( $key, $payload );
+        }
+        return rest_ensure_response( $payload );
     }
 
     /* ---------- agent surface ---------- */
@@ -570,6 +608,43 @@ class MCP_REST_Controller extends WP_REST_Controller {
         $reg = new MCP_Agent_Registry();
         $result = $reg->tool_snapshot_restore( array(
             'snapshot_id' => (int) $request->get_param( 'snapshot_id' ),
+        ) );
+        if ( is_wp_error( $result ) ) {
+            $result->add_data( array( 'status' => 502 ) );
+            return $result;
+        }
+        return rest_ensure_response( $result );
+    }
+
+    public function admin_permissions_check( $request ) {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return new WP_Error( 'mcp_admin_forbidden', __( 'Admin only.', 'elementor-mcp' ), array( 'status' => 403 ) );
+        }
+        return true;
+    }
+
+    public function handle_audit_perf( $request ) {
+        $force = (bool) $request->get_param( 'force' );
+        $a = new MCP_Performance_Analyzer();
+        $result = $force ? $a->analyze() : $a->last_run();
+        return rest_ensure_response( $result );
+    }
+
+    public function handle_audit_sec( $request ) {
+        $force = (bool) $request->get_param( 'force' );
+        $s = new MCP_Security_Scanner();
+        $result = $force ? $s->scan() : $s->last_run();
+        return rest_ensure_response( $result );
+    }
+
+    public function handle_themer_create( $request ) {
+        $reg = new MCP_Agent_Registry();
+        $result = $reg->tool_themer_create( array(
+            'title'      => (string) $request->get_param( 'title' ),
+            'location'   => (string) $request->get_param( 'location' ),
+            'sections'   => (array) $request->get_param( 'sections' ),
+            'conditions' => (array) $request->get_param( 'conditions' ),
+            'priority'   => (int) $request->get_param( 'priority' ),
         ) );
         if ( is_wp_error( $result ) ) {
             $result->add_data( array( 'status' => 502 ) );

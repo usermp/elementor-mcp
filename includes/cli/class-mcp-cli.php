@@ -28,6 +28,8 @@ class MCP_CLI {
         WP_CLI::add_command( 'mcp status', array( __CLASS__, 'status' ) );
         WP_CLI::add_command( 'mcp build-template', array( __CLASS__, 'build_template' ) );
         WP_CLI::add_command( 'mcp clone', array( __CLASS__, 'clone_site' ) );
+        WP_CLI::add_command( 'mcp audit', array( __CLASS__, 'audit' ) );
+        WP_CLI::add_command( 'mcp security', array( __CLASS__, 'security' ) );
         WP_CLI::add_command( 'mcp tools', array( __CLASS__, 'tools' ) );
         WP_CLI::add_command( 'mcp errors', array( __CLASS__, 'errors' ) );
         WP_CLI::add_command( 'mcp api-key', array( __CLASS__, 'api_key' ) );
@@ -170,5 +172,80 @@ class MCP_CLI {
             return;
         }
         WP_CLI::error( 'Use: create | list | revoke' );
+    }
+
+    /**
+     * Print audit rows in a table if WP_CLI supports it, otherwise log line-by-line.
+     */
+    public static function print_rows( $rows ) {
+        // Some WP_CLI versions throw "Invalid field" on format_items with strings;
+        // always use line-by-line output, which is guaranteed to work everywhere.
+        foreach ( $rows as $r ) {
+            WP_CLI::log( sprintf( '[%s] %s — %s', strtoupper( $r['sev'] ), $r['id'], $r['title'] ) );
+        }
+    }
+
+    /**
+     * wp mcp audit [--refresh]
+     *
+     * Runs the full performance audit and prints a score + per-check table.
+     */
+    public static function audit( $args, $assoc ) {
+        $refresh = ! empty( $assoc['refresh'] );
+        $a        = new MCP_Performance_Analyzer();
+        if ( $refresh ) {
+            $a->clear_cache();
+        }
+        $report = $a->analyze( $refresh );
+
+        WP_CLI::log( sprintf( 'Site: %s', $report['site_url'] ) );
+        WP_CLI::log( sprintf( 'WP %s · PHP %s · DB %s', $report['wp_version'], $report['php_version'], $report['db_version'] ) );
+        WP_CLI::log( sprintf( 'Score: %d/100 (grade %s)', $report['score'], $report['grade'] ) );
+        if ( empty( $report['findings'] ) ) {
+            WP_CLI::success( 'No issues found.' );
+            return;
+        }
+        $rows = array();
+        foreach ( $report['findings'] as $f ) {
+            $rows[] = array(
+                'sev'   => $f['severity'],
+                'id'    => $f['id'],
+                'title' => $f['title'],
+                'detail'=> $f['detail'],
+            );
+        }
+        self::print_rows( $rows );
+    }
+
+    /**
+     * wp mcp security [--refresh]
+     *
+     * Runs the security audit.
+     */
+    public static function security( $args, $assoc ) {
+        $refresh = ! empty( $assoc['refresh'] );
+        $s        = new MCP_Security_Scanner();
+        if ( $refresh ) {
+            $s->clear_cache();
+        }
+        $report = $s->scan( $refresh );
+
+        WP_CLI::log( sprintf( 'Site: %s', $report['site_url'] ) );
+        WP_CLI::log( sprintf( 'WP %s · PHP %s', $report['wp_version'], $report['php_version'] ) );
+        WP_CLI::log( sprintf( 'Score: %d/100 (grade %s)', $report['score'], $report['grade'] ) );
+        if ( empty( $report['findings'] ) ) {
+            WP_CLI::success( 'No issues found.' );
+            return;
+        }
+        $rows = array();
+        foreach ( $report['findings'] as $f ) {
+            $rows[] = array(
+                'sev'   => $f['severity'],
+                'id'    => $f['id'],
+                'title' => $f['title'],
+                'detail'=> $f['detail'],
+            );
+        }
+        self::print_rows( $rows );
     }
 }

@@ -232,28 +232,29 @@ class MCP_Template_Builder {
         $roles = array(
             'header' => <<<'TEXT'
 HEADER. Build a single sticky-style header section. One column with a horizontal row:
-- Logo widget on the left (use the brand name as text)
-- Navigation widget in the middle with 4 placeholder items: "About", "Services", "Work", "Contact" (anchor text only, no real links)
-- Button widget on the right with text "Get started" and a contrasting background color
-Background: white or very light from the palette. Bottom border or subtle shadow.
+- A "heading" widget on the left with the brand name as title (header_size=h3, title_color from palette[2] accent)
+- A "text-editor" widget in the middle with HTML for nav links: <a href="#" style="margin-right:24px;color:#1F2937;text-decoration:none;font-weight:500">درباره</a> <a href="#" style="margin-right:24px;color:#1F2937;text-decoration:none;font-weight:500">خدمات</a> <a href="#" style="margin-right:24px;color:#1F2937;text-decoration:none;font-weight:500">نمونه‌کار</a> <a href="#" style="color:#1F2937;text-decoration:none;font-weight:500">تماس</a>
+- A "button" widget on the right with text="شروع کنید", button_background from palette[2], text_color=#FFFFFF, border_radius=8
+Section settings: background_color from palette[4] (lightest), padding top=16 bottom=16
 DO NOT use shape dividers.
 TEXT,
             'hero' => <<<'TEXT'
-HERO. Single column, full width, dark background (use the darkest palette color).
-- Heading widget: large h1 (h1 size), white color, the brand tagline
-- Text-editor widget: 1-2 sentence subheading in a lighter accent color
-- Two button widgets side by side: primary CTA "Get started" (accent color) and secondary "Learn more" (outlined / ghost style)
-- Generous padding (120px top/bottom)
-DO NOT use shape dividers or any "shape_divider" or "shape" settings.
+HERO. Single column, full width, dark background (use palette[0] darkest). section settings: background_color from palette[0], padding top=160 bottom=160.
+- A "heading" widget: title=brand tagline (large h1, h1 size, font_size=72), title_color=#FFFFFF, align=center, text_shadow blur=10 color=rgba(0,0,0,0.3)
+- A "text-editor" widget: HTML for a subheading: <p style="text-align:center;color:#E5E7EB;font-size:20px;line-height:1.6;max-width:680px;margin:24px auto 0">short subtitle text in the brand language</p>
+- A "button" widget: text="شروع کنید" OR "رزرو کنید" (matching industry), size=lg, button_background from palette[2] (accent), text_color=#FFFFFF, border_radius=10, padding top=18 bottom=18 left=36 right=36
+DO NOT use shape dividers.
 TEXT,
             'features' => <<<'TEXT'
-FEATURES. Light background. One column with:
-- Heading widget "What we do" or similar h2, centered
-- 3 inner sections side by side (3 columns, 33% each), each containing one icon-box widget:
-  1. title "Built for speed", description 1 line
-  2. title "Secure by default", description 1 line
-  3. title "Made for scale", description 1 line
-Use the accent color for the icons.
+FEATURES. Section: background_color from palette[4] (lightest), padding top=100 bottom=100.
+- A "heading" widget h2 centered: title=feature section heading (e.g. "چرا ما؟"), title_color from palette[0], align=center, font_size=44
+- A "text-editor" widget centered: <p style="text-align:center;color:#6B7280;font-size:18px;max-width:600px;margin:12px auto 60px">short tagline</p>
+- 3 nested inner sections side by side, each _column_size=33, padding top=20 bottom=20 left=20 right=20. Each contains one "icon-box" widget with:
+  * view="default"
+  * title in brand language (e.g. "تجربه", "کیفیت", "پشتیبانی")
+  * title_color from palette[0]
+  * description_color=#6B7280
+  * icon_color from palette[2] (accent)
 TEXT,
             'about' => <<<'TEXT'
 ABOUT. Light background. One column with:
@@ -268,18 +269,20 @@ TESTIMONIALS. White background. One column with:
 Use realistic names that fit the brand culture.
 TEXT,
             'cta' => <<<'TEXT'
-CTA. Dark or accent-colored background. One column, centered:
-- Heading widget h2 white, action-oriented ("Ready to get started?")
-- Text-editor widget: 1 line of supporting text
-- Button widget "Contact us" or "Get in touch" with contrasting background
-Generous padding (100px top/bottom).
+CTA. Section: background_color from palette[2] (accent color), padding top=100 bottom=100.
+- A "heading" widget h2 centered: title=action-oriented call to action (e.g. "آماده شروع هستید؟"), title_color=#FFFFFF, align=center, font_size=44
+- A "text-editor" widget: <p style="text-align:center;color:rgba(255,255,255,0.9);font-size:18px;max-width:580px;margin:16px auto 36px">supporting line</p>
+- A "button" widget: text="تماس با ما" OR "شروع کنید", size=lg, button_background=#FFFFFF, text_color from palette[2] (accent), border_radius=10
 TEXT,
             'footer' => <<<'TEXT'
-FOOTER. Dark background (darkest palette color). One column with:
-- 3 inner sections side by side (3 columns): Company info (logo + 1 line), Quick links (4 placeholder items), Contact (email, phone, address — fabricate plausible values)
-- Bottom divider
-- Text-editor widget: copyright "© 2025 [Brand name]. All rights reserved."
-Use light/white text.
+FOOTER. Section: background_color from palette[0] (darkest), padding top=80 bottom=40.
+- One main column with these stacked widgets:
+  - 3 nested inner sections side by side, each _column_size=33, padding top=20 bottom=20. Each contains:
+    1. First column: A "heading" widget h4 with brand name as title, title_color=#FFFFFF. Then a "text-editor" widget: <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.7">short brand description</p>
+    2. Second column: A "heading" widget h5: title="لینک‌های سریع", title_color=#FFFFFF. Then a "text-editor" widget: <p style="line-height:2"><a href="#" style="color:rgba(255,255,255,0.7);text-decoration:none">درباره</a><br><a href="#" style="color:rgba(255,255,255,0.7);text-decoration:none">خدمات</a><br><a href="#" style="color:rgba(255,255,255,0.7);text-decoration:none">تماس</a></p>
+    3. Third column: A "heading" widget h5: title="تماس", title_color=#FFFFFF. Then a "text-editor" widget: <p style="color:rgba(255,255,255,0.7);font-size:14px;line-height:1.8">info@brand.ir<br>+98 21 1234 5678<br>تهران، خیابان آزادی</p>
+  - A "divider" widget with color=rgba(255,255,255,0.2), weight=1, gap top=40 bottom=24
+  - A "text-editor" widget: <p style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px">© 2025 [brand name]. تمامی حقوق محفوظ است.</p>
 TEXT,
         );
         return $roles[ $key ] ?? $roles['hero'];
